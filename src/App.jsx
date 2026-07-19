@@ -151,7 +151,7 @@ export default function App() {
   const [selectedServices, setSelectedServices] = useState(['carbon_cleaning']);
   const [appointmentDate, setAppointmentDate] = useState('2026-07-25');
   const [appointmentTime, setAppointmentTime] = useState('10:00');
-  const [customerAddress, setCustomerAddress] = useState('UTP Residence Hall V, Seri Iskandar, Perak');
+  const [customerAddress, setCustomerAddress] = useState('Subang Jaya');
   const [customerCoords, setCustomerCoords] = useState({ x: 50, y: 50 });
 
   const [bookings, setBookings] = useState([
@@ -378,6 +378,37 @@ export default function App() {
     return parseFloat(distanceKm);
   };
 
+const calculateTravelFee = () => {
+  switch (customerAddress) {
+    case "Subang Jaya":
+      return 0;
+
+    case "Shah Alam":
+      return 10;
+
+    case "Petaling Jaya":
+      return 12;
+
+    case "Kajang":
+      return 20;
+
+    case "Puchong":
+      return 15;
+
+    case "Cheras":
+      return 25;
+
+    case "KLCC":
+      return 30;
+
+    case "Bangsar":
+      return 20;
+
+    default:
+      return 10;
+  }
+};
+
   const filteredProviders = useMemo(() => {
     return providers.filter(provider => {
       const distance = calculateDistance(provider.coords);
@@ -392,7 +423,13 @@ export default function App() {
 
   const handleCheckoutSubmit = () => {
     if (!selectedProvider) return;
-    const finalPrice = calculateDynamicPrice(selectedProvider, selectedServices, selectedVehicleId);
+    const finalPrice =
+    calculateDynamicPrice(
+      selectedProvider,
+      selectedServices,
+      selectedVehicleId
+    ) +
+    calculateTravelFee();
 
     const newBooking = {
       id: `B-${Math.floor(10000 + Math.random() * 90000)}`,
@@ -1136,12 +1173,43 @@ export default function App() {
                           <label className="block text-[10px] text-slate-400 font-mono uppercase mb-1">Set Your Coordinates (Zip/Location)</label>
                           <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded px-2">
                             <MapPin className="h-4 w-4 text-purple-400 shrink-0" />
-                            <input
-                              type="text"
+                            <select
                               value={customerAddress}
                               onChange={(e) => setCustomerAddress(e.target.value)}
-                              className="bg-transparent text-xs text-white py-1.5 focus:outline-none w-full"
-                            />
+                              className="bg-slate-900 text-white border-none text-xs py-1.5 focus:outline-none w-full"
+                            >
+                              <option value="Subang Jaya" className="bg-slate-900 text-white">
+                                Subang Jaya
+                              </option>
+
+                              <option value="Shah Alam" className="bg-slate-900 text-white">
+                                Shah Alam
+                              </option>
+
+                              <option value="Petaling Jaya" className="bg-slate-900 text-white">
+                                Petaling Jaya
+                              </option>
+
+                              <option value="Kajang" className="bg-slate-900 text-white">
+                                Kajang
+                              </option>
+
+                              <option value="Puchong" className="bg-slate-900 text-white">
+                                Puchong
+                              </option>
+
+                              <option value="Cheras" className="bg-slate-900 text-white">
+                                Cheras
+                              </option>
+
+                              <option value="KLCC" className="bg-slate-900 text-white">
+                                KLCC
+                              </option>
+
+                              <option value="Bangsar" className="bg-slate-900 text-white">
+                                Bangsar
+                              </option>
+                            </select>
                           </div>
                         </div>
 
@@ -1181,7 +1249,7 @@ export default function App() {
                           <div>
                             <h3 className="text-xs font-bold text-white tracking-wider uppercase mb-1 flex items-center gap-1.5">
                               <Map className="h-4 w-4 text-purple-400" />
-                              Simulated Dispatch Radar (25km coverage)
+                              Google Maps Service Coverage
                             </h3>
                             <p className="text-[10px] text-slate-400">Dynamic tracking checks proximity metrics to guarantee safety and low transport fees.</p>
                           </div>
@@ -1189,7 +1257,7 @@ export default function App() {
                           <div className="my-4 aspect-[4/3] rounded-lg overflow-hidden border border-slate-800">
                             <iframe
                               title="UTP Location Map"
-                              src="https://www.google.com/maps?q=Universiti%20Teknologi%20PETRONAS&output=embed"
+                              src={`https://www.google.com/maps?q=${encodeURIComponent(customerAddress)}&output=embed`}
                               width="100%"
                               height="100%"
                               style={{ border: 0 }}
@@ -1397,6 +1465,15 @@ export default function App() {
                             <span className="text-slate-400">Distance:</span>
                             <span className="text-slate-200 font-mono font-bold">{calculateDistance(selectedProvider.coords)} KM</span>
                           </div>
+                                                    <div className="flex justify-between">
+                            <span className="text-slate-400">
+                              Travel Fee:
+                            </span>
+
+                            <span className="text-orange-400 font-bold font-mono">
+                              RM {calculateTravelFee()}
+                            </span>
+                          </div>
 
                           <div className="border-t border-slate-800 pt-3">
                             <span className="text-[10px] text-slate-500 block">SERVICES DETAILED:</span>
@@ -1411,7 +1488,13 @@ export default function App() {
                           <div className="border-t border-slate-800 pt-3 flex justify-between items-baseline text-white">
                             <span className="font-bold">Estimated Total:</span>
                             <span className="text-lg font-mono font-black text-purple-400">
-                              RM {calculateDynamicPrice(selectedProvider, selectedServices, selectedVehicleId)}
+                              RM {
+                                calculateDynamicPrice(
+                                  selectedProvider,
+                                  selectedServices,
+                                  selectedVehicleId
+                                ) + calculateTravelFee()
+                              }
                             </span>
                           </div>
                         </div>
@@ -1459,7 +1542,13 @@ export default function App() {
                         <div className="flex justify-between items-center text-white border-t border-slate-800 pt-2 mt-2 font-bold">
                           <span>Total Escrow Amount:</span>
                           <span className="text-base text-purple-400 font-mono">
-                            RM {calculateDynamicPrice(selectedProvider, selectedServices, selectedVehicleId)}
+                            RM {
+                              calculateDynamicPrice(
+                                selectedProvider,
+                                selectedServices,
+                                selectedVehicleId
+                              ) + calculateTravelFee()
+                            }
                           </span>
                         </div>
                       </div>
