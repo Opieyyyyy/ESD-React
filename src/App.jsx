@@ -1186,38 +1186,16 @@ export default function App() {
                             <p className="text-[10px] text-slate-400">Dynamic tracking checks proximity metrics to guarantee safety and low transport fees.</p>
                           </div>
 
-                          <div className="my-4 aspect-[4/3] bg-slate-900 rounded-lg relative overflow-hidden border border-slate-800">
-                            {/* Visual Grid Lines */}
-                            <div className="absolute inset-0 grid grid-cols-10 grid-rows-10 opacity-5">
-                              {Array.from({ length: 10 }).map((_, i) => (
-                                <div key={i} className="border-t border-l border-slate-300 w-full h-full"></div>
-                              ))}
-                            </div>
-
-                            {/* Customer Center Pin */}
-                            <div className="absolute h-6 w-6 rounded-full bg-purple-500/20 border border-purple-500 flex items-center justify-center animate-pulse" style={{ left: `${customerCoords.x}%`, top: `${customerCoords.y}%`, transform: 'translate(-50%, -50%)' }}>
-                              <User className="h-3.5 w-3.5 text-purple-400" />
-                            </div>
-
-                            {/* Provider Pins */}
-                            {filteredProviders.map(prov => {
-                              const dist = calculateDistance(prov.coords);
-                              return (
-                                <button
-                                  key={prov.id}
-                                  onClick={() => setSelectedProvider(prov)}
-                                  className="absolute group flex flex-col items-center"
-                                  style={{ left: `${prov.coords.x}%`, top: `${prov.coords.y}%`, transform: 'translate(-50%, -50%)' }}
-                                >
-                                  <div className={`h-5 w-5 rounded-full flex items-center justify-center border text-[9px] font-bold ${selectedProvider?.id === prov.id ? 'bg-purple-500 border-purple-300 text-white shadow-lg' : 'bg-slate-950 border-slate-600 text-slate-400 hover:border-purple-400'}`}>
-                                    P
-                                  </div>
-                                  <span className="absolute top-6 bg-slate-950 text-[9px] px-1.5 py-0.5 rounded border border-slate-800 whitespace-nowrap opacity-60 group-hover:opacity-100 transition-opacity">
-                                    {prov.name.split(' ')[0]} ({dist}km)
-                                  </span>
-                                </button>
-                              );
-                            })}
+                          <div className="my-4 aspect-[4/3] rounded-lg overflow-hidden border border-slate-800">
+                            <iframe
+                              title="UTP Location Map"
+                              src="https://www.google.com/maps?q=Universiti%20Teknologi%20PETRONAS&output=embed"
+                              width="100%"
+                              height="100%"
+                              style={{ border: 0 }}
+                              loading="lazy"
+                              allowFullScreen
+                            />
                           </div>
 
                           <div className="text-[11px] text-slate-500 flex items-center justify-between font-mono bg-slate-900/60 p-2 rounded">
