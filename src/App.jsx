@@ -207,6 +207,23 @@ export default function App() {
 
   const [annualKm, setAnnualKm] = useState(18000);
   const [averageFuelEfficiency, setAverageFuelEfficiency] = useState(8.5);
+  useEffect(() => {
+
+    const savedUser =
+      localStorage.getItem("currentUser");
+
+    if (savedUser) {
+
+      const user =
+        JSON.parse(savedUser);
+
+      setCurrentUser(user);
+      setCurrentRole(user.role);
+      setIsAuthenticated(true);
+
+    }
+
+  }, []);
 
   const addAuditLog = (category, user, event, status = "SUCCESS") => {
     const newLog = {
@@ -228,12 +245,27 @@ export default function App() {
     const account = accounts.find(acc => acc.email.toLowerCase() === loginEmail.toLowerCase() && acc.password === loginPassword);
 
     if (account) {
+
+      localStorage.setItem(
+        "currentUser",
+        JSON.stringify(account)
+      );
+
       setIsAuthenticated(true);
       setCurrentUser(account);
       setCurrentRole(account.role);
       setActiveTab('dashboard');
-      setAuthSuccess(`Welcome back, ${account.name}! Authenticating session...`);
-      addAuditLog("SECURITY", account.email, `User successfully authenticated as [${account.role.toUpperCase()}] role using credentials`, "SUCCESS");
+
+      setAuthSuccess(
+        `Welcome back, ${account.name}! Authenticating session...`
+      );
+
+      addAuditLog(
+        "SECURITY",
+        account.email,
+        `User successfully authenticated as [${account.role.toUpperCase()}] role using credentials`,
+        "SUCCESS"
+      );
     } else {
       setAuthError('Invalid credentials. Please enter correct email and password.');
       addAuditLog("SECURITY", loginEmail || "anonymous", `Failed login attempt. Credential mismatch against system directory`, "FAILED");
@@ -303,6 +335,11 @@ export default function App() {
     addAuditLog("SECURITY", regEmail, `Enrolled new user profile: ${newAccount.name} as [${regRole.toUpperCase()}]`, "SUCCESS");
 
     // Auto login
+    localStorage.setItem(
+      "currentUser",
+      JSON.stringify(newAccount)
+    );
+
     setIsAuthenticated(true);
     setCurrentUser(newAccount);
     setCurrentRole(newAccount.role);
@@ -317,8 +354,18 @@ export default function App() {
     setTimeout(() => {
       const account = accounts.find(acc => acc.email.toLowerCase() === email.toLowerCase() && acc.password === password);
       if (account) {
+
+        localStorage.setItem(
+          "currentUser",
+          JSON.stringify(account)
+        );
+
         setIsAuthenticated(true);
         setCurrentUser(account);
+        setCurrentRole(account.role);
+        setActiveTab('dashboard');
+
+
         setCurrentRole(account.role);
         setActiveTab('dashboard');
         addAuditLog("SECURITY", email, `Lecturer triggered automatic Quick-Login sequence as [${account.role.toUpperCase()}]`, "SUCCESS");
@@ -326,15 +373,24 @@ export default function App() {
     }, 100);
   };
 
-  const handleLogout = () => {
-    addAuditLog("SECURITY", currentUser?.email || "unknown", "Terminated active login session. Revoking tokens", "SUCCESS");
-    setIsAuthenticated(false);
-    setCurrentUser(null);
-    setLoginEmail('');
-    setLoginPassword('');
-    setAuthError('');
-    setAuthSuccess('');
-  };
+const handleLogout = () => {
+
+  localStorage.removeItem("currentUser");
+
+  addAuditLog(
+    "SECURITY",
+    currentUser?.email || "unknown",
+    "Terminated active login session. Revoking tokens",
+    "SUCCESS"
+  );
+
+  setIsAuthenticated(false);
+  setCurrentUser(null);
+  setLoginEmail('');
+  setLoginPassword('');
+  setAuthError('');
+  setAuthSuccess('');
+};
 
   const calculateDynamicPrice = (provider, servicesList, vehicleId) => {
     if (!provider) return 0;
