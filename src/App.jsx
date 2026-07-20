@@ -446,50 +446,61 @@ const handleLogout = () => {
   };
 
   const locationDistances = {
-  "Subang Jaya": {
-    "Subang Jaya": 0,
-    "Shah Alam": 8,
-    "Petaling Jaya": 10,
-    "Kajang": 30,
-    "Puchong": 15,
-    "Cheras": 25,
-    "KLCC": 20,
-    "Bangsar": 18
-  },
+      "Kajang": {
+      "Subang Jaya": 30,
+      "Shah Alam": 35,
+      "Petaling Jaya": 28,
+      "Kajang": 0,
+      "Puchong": 20,
+      "Cheras": 15,
+      "KLCC": 25,
+      "Bangsar": 22
+    },
 
-  "Shah Alam": {
-    "Subang Jaya": 8,
-    "Shah Alam": 0,
-    "Petaling Jaya": 12,
-    "Kajang": 35,
-    "Puchong": 15,
-    "Cheras": 30,
-    "KLCC": 25,
-    "Bangsar": 20
-  },
+    "Puchong": {
+      "Subang Jaya": 15,
+      "Shah Alam": 15,
+      "Petaling Jaya": 15,
+      "Kajang": 20,
+      "Puchong": 0,
+      "Cheras": 18,
+      "KLCC": 22,
+      "Bangsar": 18
+    },
 
-  "Petaling Jaya": {
-    "Subang Jaya": 10,
-    "Shah Alam": 12,
-    "Petaling Jaya": 0,
-    "Kajang": 28,
-    "Puchong": 15,
-    "Cheras": 18,
-    "KLCC": 12,
-    "Bangsar": 8
-  },
+    "Cheras": {
+      "Subang Jaya": 25,
+      "Shah Alam": 30,
+      "Petaling Jaya": 18,
+      "Kajang": 15,
+      "Puchong": 18,
+      "Cheras": 0,
+      "KLCC": 12,
+      "Bangsar": 10
+    },
 
-  "Kajang": {
-    "Subang Jaya": 30,
-    "Shah Alam": 35,
-    "Petaling Jaya": 28,
-    "Kajang": 0,
-    "Puchong": 20,
-    "Cheras": 15,
-    "KLCC": 25,
-    "Bangsar": 22
-  }
-};
+    "KLCC": {
+      "Subang Jaya": 20,
+      "Shah Alam": 25,
+      "Petaling Jaya": 12,
+      "Kajang": 25,
+      "Puchong": 22,
+      "Cheras": 12,
+      "KLCC": 0,
+      "Bangsar": 5
+    },
+
+    "Bangsar": {
+      "Subang Jaya": 18,
+      "Shah Alam": 20,
+      "Petaling Jaya": 8,
+      "Kajang": 22,
+      "Puchong": 18,
+      "Cheras": 10,
+      "KLCC": 5,
+      "Bangsar": 0
+    }
+  };
 
   const calculateDistance = (providerLocation) => {
 
@@ -498,7 +509,7 @@ const handleLogout = () => {
         providerLocation
       ]?.[
         customerAddress
-      ] || 20
+      ] ?? 20
     );
 
   };
@@ -519,7 +530,7 @@ const calculateTravelFee = (providerLocation) => {
   };
 
   const distance =
-    distanceTable[providerLocation]?.[customerAddress] || 20;
+    distanceTable[providerLocation]?.[customerAddress] ?? 20;
 
   return Math.ceil(distance * 1.5);
 };
