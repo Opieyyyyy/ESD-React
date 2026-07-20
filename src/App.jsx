@@ -22,14 +22,15 @@ const DEFAULT_ACCOUNTS = [
     studentId: "22005760",
     details: "UTP Residence Hall V, Seri Iskandar, Perak"
   },
-  {
+   {
     email: "idris@utp.edu.my",
     password: "password123",
     role: "provider",
+    providerId: "p1",
     name: "MUHAMMAD IDRIS BIN JOHAN",
     studentId: "22005830",
     details: "Apex Mobile Detailing & HHO"
-  },
+   },
   {
     email: "helmi@utp.edu.my",
     password: "password123",
@@ -309,8 +310,11 @@ export default function App() {
       email: regEmail,
       password: regPassword,
       role: regRole,
+      providerId: null,
       name: regName.toUpperCase(),
-      studentId: regRole === 'customer' ? `REG-${Math.floor(100000 + Math.random() * 900000)}` : "PARTNER",
+      studentId: regRole === 'customer'
+        ? `REG-${Math.floor(100000 + Math.random() * 900000)}`
+        : "PARTNER",
       details: regDetail || "Verified Campus Address"
     };
 
@@ -332,6 +336,7 @@ export default function App() {
       setSelectedVehicleId(initialCarId);
     } else if (regRole === 'provider') {
       const newProvId = `p${providers.length + 1}`;
+      newAccount.providerId = newProvId;
       const newProvider = {
         id: newProvId,
         name: regName.toUpperCase() + " ENTERPRISE",
@@ -2108,7 +2113,7 @@ const calculateTravelFee = (providerLocation) => {
                     </h3>
 
                     <div className="space-y-4">
-                      {bookings.filter(b => b.status !== 'Completed').map(booking => (
+                      {bookings.filter(b =>b.providerId === currentUser?.providerId && b.status !== 'Completed').map(booking => (
                         <div key={booking.id} className="bg-slate-900 rounded-lg p-5 border border-purple-950/20">
                           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-3 mb-4">
                             <div>
