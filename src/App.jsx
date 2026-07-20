@@ -178,8 +178,26 @@ export default function App() {
 
   const [currentRole, setCurrentRole] = useState('customer'); // customer | provider | admin
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [vehicles, setVehicles] = useState(INITIAL_VEHICLES);
-  const [providers, setProviders] = useState(INITIAL_PROVIDERS);
+  const [vehicles, setVehicles] = useState(() => {
+
+    const savedVehicles =
+      localStorage.getItem("vehicles");
+
+    return savedVehicles
+      ? JSON.parse(savedVehicles)
+      : INITIAL_VEHICLES;
+
+  });
+  const [providers, setProviders] = useState(() => {
+
+    const savedProviders =
+      localStorage.getItem("providers");
+
+    return savedProviders
+      ? JSON.parse(savedProviders)
+      : INITIAL_PROVIDERS;
+
+  });
 
   const [selectedVehicleId, setSelectedVehicleId] = useState(INITIAL_VEHICLES[0].id);
   const [searchQuery, setSearchQuery] = useState('');
@@ -193,9 +211,18 @@ export default function App() {
   const [customerAddress, setCustomerAddress] = useState('Subang Jaya');
   const [customerCoords, setCustomerCoords] = useState({ x: 50, y: 50 });
 
-  const [bookings, setBookings] = useState([
+  const [bookings, setBookings] = useState(() => {
+
+    const savedBookings =
+      localStorage.getItem("bookings");
+
+    return savedBookings
+      ? JSON.parse(savedBookings)
+      : [
+
     {
       id: "B-88301",
+      customerEmail: "harith@utp.edu.my",
       customerName: "MUHAMMAD HARITH LUTFI",
       vehicleId: "v1",
       vehiclePlate: "VEE 2011",
@@ -212,6 +239,7 @@ export default function App() {
     },
     {
       id: "B-88302",
+      customerEmail: "harith@utp.edu.my",
       customerName: "MUHAMMAD HARITH LUTFI",
       vehicleId: "v3",
       vehiclePlate: "ALL 993",
@@ -228,7 +256,8 @@ export default function App() {
       reviewRating: 5,
       reviewText: "Exceptional engine sound recovery after carbon cleaning! Fuel consumption has improved immediately."
     }
-  ]);
+  ]});
+
 
   const [auditLogs, setAuditLogs] = useState([
     { id: "L-001", timestamp: "2026-07-20T00:05:12Z", category: "SECURITY", user: "system_daemon", event: "Token Session validation completed for student credentials (22005760 / 22005830)", status: "SUCCESS" },
@@ -253,6 +282,16 @@ export default function App() {
     );
 
   }, [vehicles, currentUser]);
+
+  const userBookings = useMemo(() => {
+
+    return bookings.filter(
+      b => b.customerEmail === currentUser?.email
+    );
+
+  }, [bookings, currentUser]);
+
+  
   useEffect(() => {
 
     const savedUser =
@@ -280,6 +319,28 @@ export default function App() {
 
   }, [accounts]);
 
+  useEffect(() => {
+    localStorage.setItem(
+      "vehicles",
+      JSON.stringify(vehicles)
+    );
+  }, [vehicles]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "providers",
+      JSON.stringify(providers)
+    );
+  }, [providers]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "bookings",
+      JSON.stringify(bookings)
+    );
+  }, [bookings]);
+
+  
   const addAuditLog = (category, user, event, status = "SUCCESS") => {
     const newLog = {
       id: `L-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -642,6 +703,7 @@ const calculateTravelFee = (providerLocation) => {
 
     const newBooking = {
       id: `B-${Math.floor(10000 + Math.random() * 90000)}`,
+      customerEmail: currentUser?.email,
       customerName: currentUser?.name || "MUHAMMAD HARITH LUTFI",
       vehicleId: selectedVehicleId,
       vehiclePlate: vehicles.find(v => v.id === selectedVehicleId)?.plate || "VEE 2011",
@@ -1244,7 +1306,7 @@ const calculateTravelFee = (providerLocation) => {
                     <div className="bg-slate-950 border border-purple-950/40 p-4 rounded-xl flex items-center justify-between shadow-lg">
                       <div>
                         <span className="block text-[10px] text-slate-400 tracking-wider font-mono">TOTAL ACTIVE BOOKINGS</span>
-                        <span className="text-2xl font-bold text-white">{bookings.length}</span>
+                        <span className="text-2xl font-bold text-white">{userBookings.length}</span>
                       </div>
                       <div className="p-2.5 rounded-lg bg-purple-950 text-purple-400">
                         <Calendar className="h-5 w-5" />
@@ -1279,7 +1341,7 @@ const calculateTravelFee = (providerLocation) => {
                       Live Service Execution Monitor
                     </h3>
 
-                    {bookings.filter(b => b.status !== 'Completed').length === 0 ? (
+                    {userBookings.filter(b => b.status !== 'Completed').length === 0 ? (
                       <div className="text-center py-8 text-slate-500">
                         <p className="text-xs">No active mobile service sessions. Dispatch a certified team now.</p>
                         <button
@@ -1291,7 +1353,7 @@ const calculateTravelFee = (providerLocation) => {
                       </div>
                     ) : (
                       <div className="space-y-4">
-                        {bookings.filter(b => b.status !== 'Completed').map(booking => (
+                        {userBookings.filter( b => b.status !== 'Completed').map(booking => (
                           <div key={booking.id} className="bg-slate-900 rounded-lg p-4 border border-purple-950/30 relative overflow-hidden">
                             <div className="absolute top-0 left-0 bottom-0 bg-purple-500/5 transition-all" style={{ width: `${booking.progressPercent}%` }}></div>
 
