@@ -47,7 +47,7 @@ const INITIAL_PROVIDERS = [
     owner: "Zulhelmi Bin Mansor",
     rating: 4.9,
     reviewsCount: 142,
-    baseLocation: "Subang Jaya, Selangor",
+    baseLocation: "Subang Jaya",
     coords: { x: 45, y: 55 },
     coverageRadius: 25, // km
     services: ['carbon_cleaning', 'polishing', 'ceramic_coating', 'interior_wash'],
@@ -62,7 +62,7 @@ const INITIAL_PROVIDERS = [
     owner: "Ahmad Farhan",
     rating: 4.7,
     reviewsCount: 89,
-    baseLocation: "Shah Alam, Selangor",
+    baseLocation: "Shah Alam",
     coords: { x: 30, y: 45 },
     coverageRadius: 20,
     services: ['carbon_cleaning', 'interior_wash', 'polishing'],
@@ -77,7 +77,7 @@ const INITIAL_PROVIDERS = [
     owner: "Kavinesh Raj",
     rating: 4.95,
     reviewsCount: 210,
-    baseLocation: "Petaling Jaya, KL",
+    baseLocation: "Petaling Jaya",
     coords: { x: 60, y: 50 },
     coverageRadius: 30,
     services: ['polishing', 'ceramic_coating', 'interior_wash'],
@@ -92,7 +92,7 @@ const INITIAL_PROVIDERS = [
     owner: "Muhammad Idris",
     rating: 4.6,
     reviewsCount: 64,
-    baseLocation: "Kajang, Selangor",
+    baseLocation: "Kajang",
     coords: { x: 75, y: 75 },
     coverageRadius: 15,
     services: ['carbon_cleaning', 'interior_wash'],
@@ -135,7 +135,7 @@ export default function App() {
   const [regEmail, setRegEmail] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [regRole, setRegRole] = useState('customer'); // customer | provider
-  const [regDetail, setRegDetail] = useState('');
+  const [regDetail, setRegDetail] = useState('Subang Jaya');
 
   // Conditional Registration vehicle/provider details
   const [regPlate, setRegPlate] = useState('');
@@ -445,47 +445,102 @@ const handleLogout = () => {
     return runningTotal;
   };
 
-  const calculateDistance = (pCoords) => {
-    const dx = customerCoords.x - pCoords.x;
-    const dy = customerCoords.y - pCoords.y;
-    const distanceKm = Math.sqrt(dx * dx + dy * dy).toFixed(1);
-    return parseFloat(distanceKm);
+  const locationDistances = {
+      "Kajang": {
+      "Subang Jaya": 30,
+      "Shah Alam": 35,
+      "Petaling Jaya": 28,
+      "Kajang": 0,
+      "Puchong": 20,
+      "Cheras": 15,
+      "KLCC": 25,
+      "Bangsar": 22
+    },
+
+    "Puchong": {
+      "Subang Jaya": 15,
+      "Shah Alam": 15,
+      "Petaling Jaya": 15,
+      "Kajang": 20,
+      "Puchong": 0,
+      "Cheras": 18,
+      "KLCC": 22,
+      "Bangsar": 18
+    },
+
+    "Cheras": {
+      "Subang Jaya": 25,
+      "Shah Alam": 30,
+      "Petaling Jaya": 18,
+      "Kajang": 15,
+      "Puchong": 18,
+      "Cheras": 0,
+      "KLCC": 12,
+      "Bangsar": 10
+    },
+
+    "KLCC": {
+      "Subang Jaya": 20,
+      "Shah Alam": 25,
+      "Petaling Jaya": 12,
+      "Kajang": 25,
+      "Puchong": 22,
+      "Cheras": 12,
+      "KLCC": 0,
+      "Bangsar": 5
+    },
+
+    "Bangsar": {
+      "Subang Jaya": 18,
+      "Shah Alam": 20,
+      "Petaling Jaya": 8,
+      "Kajang": 22,
+      "Puchong": 18,
+      "Cheras": 10,
+      "KLCC": 5,
+      "Bangsar": 0
+    }
   };
 
-const calculateTravelFee = () => {
-  switch (customerAddress) {
-    case "Subang Jaya":
-      return 0;
+  const calculateDistance = (providerLocation) => {
 
-    case "Shah Alam":
-      return 10;
+    return (
+      locationDistances[
+        providerLocation
+      ]?.[
+        customerAddress
+      ] ?? 20
+    );
 
-    case "Petaling Jaya":
-      return 12;
+  };
 
-    case "Kajang":
-      return 20;
+const calculateTravelFee = (providerLocation) => {
 
-    case "Puchong":
-      return 15;
+  const distanceTable = {
+    "Subang Jaya": {
+      "Subang Jaya": 0,
+      "Shah Alam": 8,
+      "Petaling Jaya": 10,
+      "Kajang": 30,
+      "Puchong": 15,
+      "Cheras": 25,
+      "KLCC": 20,
+      "Bangsar": 18
+    }
+  };
 
-    case "Cheras":
-      return 25;
+  const distance =
+    distanceTable[providerLocation]?.[customerAddress] ?? 20;
 
-    case "KLCC":
-      return 30;
-
-    case "Bangsar":
-      return 20;
-
-    default:
-      return 10;
-  }
+  return Math.ceil(distance * 1.5);
 };
 
   const filteredProviders = useMemo(() => {
     return providers.filter(provider => {
-      const distance = calculateDistance(provider.coords);
+      const distance =
+      calculateDistance(
+        provider.baseLocation
+      );
       const matchesRadius = distance <= provider.coverageRadius;
       const matchesSearch = provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         provider.baseLocation.toLowerCase().includes(searchQuery.toLowerCase());
@@ -503,6 +558,9 @@ const calculateTravelFee = () => {
       selectedServices,
       selectedVehicleId
     ) +
+    calculateTravelFee(
+      selectedProvider?.baseLocation
+    );
     calculateTravelFee();
 
     const newBooking = {
@@ -798,18 +856,6 @@ const calculateTravelFee = () => {
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-[10px] text-slate-400 font-mono uppercase mb-1">Geographic Campus / Base Location</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Seri Iskandar, Perak"
-                    value={regDetail}
-                    onChange={(e) => setRegDetail(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:border-purple-500 focus:outline-none"
-                    required
-                  />
-                </div>
-
                 {/* Conditional fields based on selected signup role */}
                 {regRole === 'customer' && (
                   <div className="bg-slate-950 p-3 rounded-lg border border-purple-950/40 space-y-3">
@@ -844,6 +890,26 @@ const calculateTravelFee = () => {
                 {regRole === 'provider' && (
                   <div className="bg-slate-950 p-3 rounded-lg border border-purple-950/40 space-y-3">
                     <span className="block text-[9px] text-purple-400 font-mono font-bold uppercase">Equipment & Coverage Settings</span>
+                    <div>
+                      <label className="block text-[8px] text-slate-500 font-mono uppercase mb-0.5">
+                        Business Base Location
+                      </label>
+
+                      <select
+                        value={regDetail}
+                        onChange={(e) => setRegDetail(e.target.value)}
+                        className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-white focus:outline-none"
+                      >
+                        <option value="Subang Jaya">Subang Jaya</option>
+                        <option value="Shah Alam">Shah Alam</option>
+                        <option value="Petaling Jaya">Petaling Jaya</option>
+                        <option value="Kajang">Kajang</option>
+                        <option value="Puchong">Puchong</option>
+                        <option value="Cheras">Cheras</option>
+                        <option value="KLCC">KLCC</option>
+                        <option value="Bangsar">Bangsar</option>
+                      </select>
+                    </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
                         <label className="block text-[8px] text-slate-500 font-mono uppercase mb-0.5">HHO Machine Model</label>
@@ -1361,7 +1427,10 @@ const calculateTravelFee = () => {
                             </div>
                           ) : (
                             filteredProviders.map(prov => {
-                              const distance = calculateDistance(prov.coords);
+                              const distance =
+                              calculateDistance(
+                                prov.baseLocation
+                              );
                               return (
                                 <div
                                   key={prov.id}
@@ -1543,7 +1612,7 @@ const calculateTravelFee = () => {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-slate-400">Distance:</span>
-                            <span className="text-slate-200 font-mono font-bold">{calculateDistance(selectedProvider.coords)} KM</span>
+                            <span className="text-slate-200 font-mono font-bold">{calculateDistance(selectedProvider.baseLocation)} KM</span>
                           </div>
                                                     <div className="flex justify-between">
                             <span className="text-slate-400">
@@ -1551,7 +1620,8 @@ const calculateTravelFee = () => {
                             </span>
 
                             <span className="text-orange-400 font-bold font-mono">
-                              RM {calculateTravelFee()}
+                              RM {calculateTravelFee(selectedProvider?.baseLocation)}
+
                             </span>
                           </div>
 
@@ -1573,7 +1643,7 @@ const calculateTravelFee = () => {
                                   selectedProvider,
                                   selectedServices,
                                   selectedVehicleId
-                                ) + calculateTravelFee()
+                                ) + calculateTravelFee(selectedProvider?.baseLocation)
                               }
                             </span>
                           </div>
@@ -1627,7 +1697,7 @@ const calculateTravelFee = () => {
                                 selectedProvider,
                                 selectedServices,
                                 selectedVehicleId
-                              ) + calculateTravelFee()
+                              ) + calculateTravelFee(selectedProvider?.baseLocation)
                             }
                           </span>
                         </div>
