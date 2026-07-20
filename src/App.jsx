@@ -22,14 +22,15 @@ const DEFAULT_ACCOUNTS = [
     studentId: "22005760",
     details: "UTP Residence Hall V, Seri Iskandar, Perak"
   },
-  {
+   {
     email: "idris@utp.edu.my",
     password: "password123",
     role: "provider",
+    providerId: "p1",
     name: "MUHAMMAD IDRIS BIN JOHAN",
     studentId: "22005830",
     details: "Apex Mobile Detailing & HHO"
-  },
+   },
   {
     email: "helmi@utp.edu.my",
     password: "password123",
@@ -47,7 +48,7 @@ const INITIAL_PROVIDERS = [
     owner: "Zulhelmi Bin Mansor",
     rating: 4.9,
     reviewsCount: 142,
-    baseLocation: "Subang Jaya, Selangor",
+    baseLocation: "Subang Jaya",
     coords: { x: 45, y: 55 },
     coverageRadius: 25, // km
     services: ['carbon_cleaning', 'polishing', 'ceramic_coating', 'interior_wash'],
@@ -62,7 +63,7 @@ const INITIAL_PROVIDERS = [
     owner: "Ahmad Farhan",
     rating: 4.7,
     reviewsCount: 89,
-    baseLocation: "Shah Alam, Selangor",
+    baseLocation: "Shah Alam",
     coords: { x: 30, y: 45 },
     coverageRadius: 20,
     services: ['carbon_cleaning', 'interior_wash', 'polishing'],
@@ -77,7 +78,7 @@ const INITIAL_PROVIDERS = [
     owner: "Kavinesh Raj",
     rating: 4.95,
     reviewsCount: 210,
-    baseLocation: "Petaling Jaya, KL",
+    baseLocation: "Petaling Jaya",
     coords: { x: 60, y: 50 },
     coverageRadius: 30,
     services: ['polishing', 'ceramic_coating', 'interior_wash'],
@@ -92,7 +93,7 @@ const INITIAL_PROVIDERS = [
     owner: "Muhammad Idris",
     rating: 4.6,
     reviewsCount: 64,
-    baseLocation: "Kajang, Selangor",
+    baseLocation: "Kajang",
     coords: { x: 75, y: 75 },
     coverageRadius: 15,
     services: ['carbon_cleaning', 'interior_wash'],
@@ -104,14 +105,52 @@ const INITIAL_PROVIDERS = [
 ];
 
 const INITIAL_VEHICLES = [
-  { id: 'v1', make: "Proton", model: "Saga", year: "2021", plate: "VEE 2011", category: "Sedan", engineSize: "1.3L" },
-  { id: 'v2', make: "Perodua", model: "Ativa", year: "2023", plate: "WQA 8821", category: "SUV", engineSize: "1.0L Turbo" },
-  { id: 'v3', make: "Honda", model: "Civic FE", year: "2022", plate: "ALL 993", category: "Sedan", engineSize: "1.5L Turbo" },
+  {
+    id: 'v1',
+    ownerEmail: "harith@utp.edu.my",
+    make: "Proton",
+    model: "Saga",
+    year: "2021",
+    plate: "VEE 2011",
+    category: "Sedan",
+    engineSize: "1.3L"
+  },
+
+  {
+    id: 'v2',
+    ownerEmail: "harith@utp.edu.my",
+    make: "Perodua",
+    model: "Ativa",
+    year: "2023",
+    plate: "WQA 8821",
+    category: "SUV",
+    engineSize: "1.0L Turbo"
+  },
+
+  {
+    id: 'v3',
+    ownerEmail: "harith@utp.edu.my",
+    make: "Honda",
+    model: "Civic FE",
+    year: "2022",
+    plate: "ALL 993",
+    category: "Sedan",
+    engineSize: "1.5L Turbo"
+  }
 ];
 
 export default function App() {
-  const [accounts, setAccounts] = useState(DEFAULT_ACCOUNTS);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [accounts, setAccounts] = useState(() => {
+
+    const savedAccounts =
+      localStorage.getItem("accounts");
+
+    return savedAccounts
+      ? JSON.parse(savedAccounts)
+      : DEFAULT_ACCOUNTS;
+
+  });
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authScreen, setAuthScreen] = useState('login'); // login | register
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -126,7 +165,7 @@ export default function App() {
   const [regEmail, setRegEmail] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [regRole, setRegRole] = useState('customer'); // customer | provider
-  const [regDetail, setRegDetail] = useState('');
+  const [regDetail, setRegDetail] = useState('Subang Jaya');
 
   // Conditional Registration vehicle/provider details
   const [regPlate, setRegPlate] = useState('');
@@ -139,8 +178,26 @@ export default function App() {
 
   const [currentRole, setCurrentRole] = useState('customer'); // customer | provider | admin
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [vehicles, setVehicles] = useState(INITIAL_VEHICLES);
-  const [providers, setProviders] = useState(INITIAL_PROVIDERS);
+  const [vehicles, setVehicles] = useState(() => {
+
+    const savedVehicles =
+      localStorage.getItem("vehicles");
+
+    return savedVehicles
+      ? JSON.parse(savedVehicles)
+      : INITIAL_VEHICLES;
+
+  });
+  const [providers, setProviders] = useState(() => {
+
+    const savedProviders =
+      localStorage.getItem("providers");
+
+    return savedProviders
+      ? JSON.parse(savedProviders)
+      : INITIAL_PROVIDERS;
+
+  });
 
   const [selectedVehicleId, setSelectedVehicleId] = useState(INITIAL_VEHICLES[0].id);
   const [searchQuery, setSearchQuery] = useState('');
@@ -151,12 +208,21 @@ export default function App() {
   const [selectedServices, setSelectedServices] = useState(['carbon_cleaning']);
   const [appointmentDate, setAppointmentDate] = useState('2026-07-25');
   const [appointmentTime, setAppointmentTime] = useState('10:00');
-  const [customerAddress, setCustomerAddress] = useState('UTP Residence Hall V, Seri Iskandar, Perak');
+  const [customerAddress, setCustomerAddress] = useState('Subang Jaya');
   const [customerCoords, setCustomerCoords] = useState({ x: 50, y: 50 });
 
-  const [bookings, setBookings] = useState([
+  const [bookings, setBookings] = useState(() => {
+
+    const savedBookings =
+      localStorage.getItem("bookings");
+
+    return savedBookings
+      ? JSON.parse(savedBookings)
+      : [
+
     {
       id: "B-88301",
+      customerEmail: "harith@utp.edu.my",
       customerName: "MUHAMMAD HARITH LUTFI",
       vehicleId: "v1",
       vehiclePlate: "VEE 2011",
@@ -173,6 +239,7 @@ export default function App() {
     },
     {
       id: "B-88302",
+      customerEmail: "harith@utp.edu.my",
       customerName: "MUHAMMAD HARITH LUTFI",
       vehicleId: "v3",
       vehiclePlate: "ALL 993",
@@ -189,7 +256,8 @@ export default function App() {
       reviewRating: 5,
       reviewText: "Exceptional engine sound recovery after carbon cleaning! Fuel consumption has improved immediately."
     }
-  ]);
+  ]});
+
 
   const [auditLogs, setAuditLogs] = useState([
     { id: "L-001", timestamp: "2026-07-20T00:05:12Z", category: "SECURITY", user: "system_daemon", event: "Token Session validation completed for student credentials (22005760 / 22005830)", status: "SUCCESS" },
@@ -207,7 +275,72 @@ export default function App() {
 
   const [annualKm, setAnnualKm] = useState(18000);
   const [averageFuelEfficiency, setAverageFuelEfficiency] = useState(8.5);
+  const userVehicles = useMemo(() => {
 
+    return vehicles.filter(
+      v => v.ownerEmail === currentUser?.email
+    );
+
+  }, [vehicles, currentUser]);
+
+  const userBookings = useMemo(() => {
+
+    return bookings.filter(
+      b => b.customerEmail === currentUser?.email
+    );
+
+  }, [bookings, currentUser]);
+
+  
+  useEffect(() => {
+
+    const savedUser =
+      localStorage.getItem("currentUser");
+
+    if (savedUser) {
+
+      const user =
+        JSON.parse(savedUser);
+
+      setCurrentUser(user);
+      setCurrentRole(user.role);
+      setIsAuthenticated(true);
+
+    }
+
+  }, []);
+
+  useEffect(() => {
+
+    localStorage.setItem(
+      "accounts",
+      JSON.stringify(accounts)
+    );
+
+  }, [accounts]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "vehicles",
+      JSON.stringify(vehicles)
+    );
+  }, [vehicles]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "providers",
+      JSON.stringify(providers)
+    );
+  }, [providers]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "bookings",
+      JSON.stringify(bookings)
+    );
+  }, [bookings]);
+
+  
   const addAuditLog = (category, user, event, status = "SUCCESS") => {
     const newLog = {
       id: `L-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -228,14 +361,29 @@ export default function App() {
     const account = accounts.find(acc => acc.email.toLowerCase() === loginEmail.toLowerCase() && acc.password === loginPassword);
 
     if (account) {
+
+      localStorage.setItem(
+        "currentUser",
+        JSON.stringify(account)
+      );
+
       setIsAuthenticated(true);
       setCurrentUser(account);
       setCurrentRole(account.role);
       setActiveTab('dashboard');
-      setAuthSuccess(`Welcome back, ${account.name}! Authenticating session...`);
-      addAuditLog("SECURITY", account.email, `User successfully authenticated as [${account.role.toUpperCase()}] role using credentials`, "SUCCESS");
+
+      setAuthSuccess(
+        `Welcome back, ${account.name}! Authenticating session...`
+      );
+
+      addAuditLog(
+        "SECURITY",
+        account.email,
+        `User successfully authenticated as [${account.role.toUpperCase()}] role using credentials`,
+        "SUCCESS"
+      );
     } else {
-      setAuthError('Invalid credentials. Please select a quick-demo credential below for easy grading.');
+      setAuthError('Invalid credentials. Please enter correct email and password.');
       addAuditLog("SECURITY", loginEmail || "anonymous", `Failed login attempt. Credential mismatch against system directory`, "FAILED");
     }
   };
@@ -259,29 +407,44 @@ export default function App() {
       email: regEmail,
       password: regPassword,
       role: regRole,
+      providerId: null,
       name: regName.toUpperCase(),
-      studentId: regRole === 'customer' ? `REG-${Math.floor(100000 + Math.random() * 900000)}` : "PARTNER",
+      studentId: regRole === 'customer'
+        ? `REG-${Math.floor(100000 + Math.random() * 900000)}`
+        : "PARTNER",
       details: regDetail || "Verified Campus Address"
     };
 
-    setAccounts(prev => [...prev, newAccount]);
+    const updatedAccounts = [
+      ...accounts,
+      newAccount
+    ];
+
+    setAccounts(updatedAccounts);
+
+    localStorage.setItem(
+      "accounts",
+      JSON.stringify(updatedAccounts)
+    );
 
     // Role-Based dynamic entity generation
     if (regRole === 'customer') {
       const initialCarId = `v${vehicles.length + 1}`;
       const newCar = {
-        id: initialCarId,
-        make: regVehicleMake,
-        model: regVehicleModel,
-        year: "2024",
-        plate: regPlate || `UTP ${Math.floor(1000 + Math.random() * 9000)}`,
-        category: regVehicleCategory,
-        engineSize: regEngineSize
-      };
+      id: `v${vehicles.length + 1}`,
+      ownerEmail: currentUser?.email,
+      make: newVehicleMake,
+      model: newVehicleModel,
+      year: newVehicleYear || '2026',
+      plate: newVehiclePlate,
+      category: newVehicleCategory,
+      engineSize: newVehicleEngine
+    };
       setVehicles(prev => [...prev, newCar]);
       setSelectedVehicleId(initialCarId);
     } else if (regRole === 'provider') {
       const newProvId = `p${providers.length + 1}`;
+      newAccount.providerId = newProvId;
       const newProvider = {
         id: newProvId,
         name: regName.toUpperCase() + " ENTERPRISE",
@@ -303,6 +466,11 @@ export default function App() {
     addAuditLog("SECURITY", regEmail, `Enrolled new user profile: ${newAccount.name} as [${regRole.toUpperCase()}]`, "SUCCESS");
 
     // Auto login
+    localStorage.setItem(
+      "currentUser",
+      JSON.stringify(newAccount)
+    );
+
     setIsAuthenticated(true);
     setCurrentUser(newAccount);
     setCurrentRole(newAccount.role);
@@ -317,8 +485,18 @@ export default function App() {
     setTimeout(() => {
       const account = accounts.find(acc => acc.email.toLowerCase() === email.toLowerCase() && acc.password === password);
       if (account) {
+
+        localStorage.setItem(
+          "currentUser",
+          JSON.stringify(account)
+        );
+
         setIsAuthenticated(true);
         setCurrentUser(account);
+        setCurrentRole(account.role);
+        setActiveTab('dashboard');
+
+
         setCurrentRole(account.role);
         setActiveTab('dashboard');
         addAuditLog("SECURITY", email, `Lecturer triggered automatic Quick-Login sequence as [${account.role.toUpperCase()}]`, "SUCCESS");
@@ -326,15 +504,24 @@ export default function App() {
     }, 100);
   };
 
-  const handleLogout = () => {
-    addAuditLog("SECURITY", currentUser?.email || "unknown", "Terminated active login session. Revoking tokens", "SUCCESS");
-    setIsAuthenticated(false);
-    setCurrentUser(null);
-    setLoginEmail('');
-    setLoginPassword('');
-    setAuthError('');
-    setAuthSuccess('');
-  };
+const handleLogout = () => {
+
+  localStorage.removeItem("currentUser");
+
+  addAuditLog(
+    "SECURITY",
+    currentUser?.email || "unknown",
+    "Terminated active login session. Revoking tokens",
+    "SUCCESS"
+  );
+
+  setIsAuthenticated(false);
+  setCurrentUser(null);
+  setLoginEmail('');
+  setLoginPassword('');
+  setAuthError('');
+  setAuthSuccess('');
+};
 
   const calculateDynamicPrice = (provider, servicesList, vehicleId) => {
     if (!provider) return 0;
@@ -371,16 +558,137 @@ export default function App() {
     return runningTotal;
   };
 
-  const calculateDistance = (pCoords) => {
-    const dx = customerCoords.x - pCoords.x;
-    const dy = customerCoords.y - pCoords.y;
-    const distanceKm = Math.sqrt(dx * dx + dy * dy).toFixed(1);
-    return parseFloat(distanceKm);
+  const locationDistances = {
+
+    "Subang Jaya": {
+      "Subang Jaya": 0,
+      "Shah Alam": 8,
+      "Petaling Jaya": 10,
+      "Kajang": 30,
+      "Puchong": 15,
+      "Cheras": 25,
+      "KLCC": 20,
+      "Bangsar": 18
+    },
+
+    "Shah Alam": {
+      "Subang Jaya": 8,
+      "Shah Alam": 0,
+      "Petaling Jaya": 12,
+      "Kajang": 35,
+      "Puchong": 15,
+      "Cheras": 30,
+      "KLCC": 25,
+      "Bangsar": 20
+    },
+
+    "Petaling Jaya": {
+      "Subang Jaya": 10,
+      "Shah Alam": 12,
+      "Petaling Jaya": 0,
+      "Kajang": 28,
+      "Puchong": 15,
+      "Cheras": 18,
+      "KLCC": 12,
+      "Bangsar": 8
+    },
+
+    "Kajang": {
+      "Subang Jaya": 30,
+      "Shah Alam": 35,
+      "Petaling Jaya": 28,
+      "Kajang": 0,
+      "Puchong": 20,
+      "Cheras": 15,
+      "KLCC": 25,
+      "Bangsar": 22
+    },
+
+    "Puchong": {
+      "Subang Jaya": 15,
+      "Shah Alam": 15,
+      "Petaling Jaya": 15,
+      "Kajang": 20,
+      "Puchong": 0,
+      "Cheras": 18,
+      "KLCC": 22,
+      "Bangsar": 18
+    },
+
+    "Cheras": {
+      "Subang Jaya": 25,
+      "Shah Alam": 30,
+      "Petaling Jaya": 18,
+      "Kajang": 15,
+      "Puchong": 18,
+      "Cheras": 0,
+      "KLCC": 12,
+      "Bangsar": 10
+    },
+
+    "KLCC": {
+      "Subang Jaya": 20,
+      "Shah Alam": 25,
+      "Petaling Jaya": 12,
+      "Kajang": 25,
+      "Puchong": 22,
+      "Cheras": 12,
+      "KLCC": 0,
+      "Bangsar": 5
+    },
+
+    "Bangsar": {
+      "Subang Jaya": 18,
+      "Shah Alam": 20,
+      "Petaling Jaya": 8,
+      "Kajang": 22,
+      "Puchong": 18,
+      "Cheras": 10,
+      "KLCC": 5,
+      "Bangsar": 0
+    }
+
   };
+
+  const calculateDistance = (providerLocation) => {
+
+    return (
+      locationDistances[
+        providerLocation
+      ]?.[
+        customerAddress
+      ] ?? 20
+    );
+
+  };
+
+const calculateTravelFee = (providerLocation) => {
+
+  const distanceTable = {
+    "Subang Jaya": {
+      "Subang Jaya": 0,
+      "Shah Alam": 8,
+      "Petaling Jaya": 10,
+      "Kajang": 30,
+      "Puchong": 15,
+      "Cheras": 25,
+      "KLCC": 20,
+      "Bangsar": 18
+    }
+  };
+
+  const distance =
+    distanceTable[providerLocation]?.[customerAddress] ?? 20;
+
+  return Math.ceil(distance * 1.5);
+};
 
   const filteredProviders = useMemo(() => {
     return providers.filter(provider => {
-      const distance = calculateDistance(provider.coords);
+      const distance =
+      calculateDistance(
+        provider.baseLocation
+      );
       const matchesRadius = distance <= provider.coverageRadius;
       const matchesSearch = provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         provider.baseLocation.toLowerCase().includes(searchQuery.toLowerCase());
@@ -392,10 +700,20 @@ export default function App() {
 
   const handleCheckoutSubmit = () => {
     if (!selectedProvider) return;
-    const finalPrice = calculateDynamicPrice(selectedProvider, selectedServices, selectedVehicleId);
+    const finalPrice =
+    calculateDynamicPrice(
+      selectedProvider,
+      selectedServices,
+      selectedVehicleId
+    ) +
+    calculateTravelFee(
+      selectedProvider?.baseLocation
+    );
+    calculateTravelFee();
 
     const newBooking = {
       id: `B-${Math.floor(10000 + Math.random() * 90000)}`,
+      customerEmail: currentUser?.email,
       customerName: currentUser?.name || "MUHAMMAD HARITH LUTFI",
       vehicleId: selectedVehicleId,
       vehiclePlate: vehicles.find(v => v.id === selectedVehicleId)?.plate || "VEE 2011",
@@ -422,6 +740,7 @@ export default function App() {
     if (!newVehicleMake || !newVehicleModel || !newVehiclePlate) return;
     const newCar = {
       id: `v${vehicles.length + 1}`,
+      ownerEmail: currentUser?.email,
       make: newVehicleMake,
       model: newVehicleModel,
       year: newVehicleYear || '2026',
@@ -493,29 +812,29 @@ export default function App() {
             <div className="bg-gradient-to-tr from-purple-950/20 via-slate-900 to-indigo-950/20 border border-purple-900/30 p-6 rounded-2xl space-y-4">
               <div className="flex items-center gap-2">
                 <Shield className="h-6 w-6 text-purple-400" />
-                <span className="font-mono text-xs text-purple-300 font-semibold uppercase tracking-widest">UTP Authentication Authority</span>
+                <span className="font-mono text-xs text-purple-300 font-semibold uppercase tracking-widest">MOBILE VEHICLE DETAILING MARKETPLACE</span>
               </div>
               <h2 className="text-2xl font-black text-white tracking-tight leading-snug">
-                Unified Role-Based Access Control Interface
+                Professional Mobile Detailing & Carbon Cleaning Services
               </h2>
               <p className="text-xs text-slate-400 leading-relaxed">
-                This secure gateway manages permission sets matching the strict guidelines of <strong className="text-purple-300">"Group 1 Mobile Vehicle Detailing & Carbon Cleaning Marketplace Report.docx"</strong>. Log in with secure parameters to instantly unlock customized dashboard reporting, dispatch radars, data persistence nodes, and commission ledger flows.
+                Book trusted mobile vehicle detailing and hydrogen carbon cleaning services directly to your home, office, or preferred location. <strong className="text-purple-300">"Our marketplace connects customers with certified automotive care specialists across the Klang Valley, providing convenient scheduling, transparent pricing, and professional on-site vehicle maintenance."</strong>
               </p>
 
               <div className="h-px bg-slate-800"></div>
 
               <div className="grid grid-cols-3 gap-2 pt-2 text-center text-[10px] font-mono">
                 <div className="p-2 bg-slate-950/80 rounded border border-purple-950/40">
-                  <span className="block text-purple-400 font-bold">100% RBAC</span>
-                  <span className="text-slate-500">Fully Compliant</span>
+                  <span className="block text-purple-400 font-bold">100+ Bookings</span>
+                  <span className="text-slate-500">Completed Monthly</span>
                 </div>
                 <div className="p-2 bg-slate-950/80 rounded border border-purple-950/40">
-                  <span className="block text-purple-400 font-bold">UTP AUDIT</span>
-                  <span className="text-slate-500">Immutable Logs</span>
+                  <span className="block text-purple-400 font-bold">CERTIFIED TECHNICIANS</span>
+                  <span className="text-slate-500">VERIFIED PROFESSIONALS</span>
                 </div>
                 <div className="p-2 bg-slate-950/80 rounded border border-purple-950/40">
-                  <span className="block text-purple-400 font-bold">STRIPE ESCROW</span>
-                  <span className="text-slate-500">Verified System</span>
+                  <span className="block text-purple-400 font-bold">DOOR SERVICE</span>
+                  <span className="text-slate-500">CONVENIENT SCHEDULING</span>
                 </div>
               </div>
             </div>
@@ -687,18 +1006,6 @@ export default function App() {
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-[10px] text-slate-400 font-mono uppercase mb-1">Geographic Campus / Base Location</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Seri Iskandar, Perak"
-                    value={regDetail}
-                    onChange={(e) => setRegDetail(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:border-purple-500 focus:outline-none"
-                    required
-                  />
-                </div>
-
                 {/* Conditional fields based on selected signup role */}
                 {regRole === 'customer' && (
                   <div className="bg-slate-950 p-3 rounded-lg border border-purple-950/40 space-y-3">
@@ -733,6 +1040,26 @@ export default function App() {
                 {regRole === 'provider' && (
                   <div className="bg-slate-950 p-3 rounded-lg border border-purple-950/40 space-y-3">
                     <span className="block text-[9px] text-purple-400 font-mono font-bold uppercase">Equipment & Coverage Settings</span>
+                    <div>
+                      <label className="block text-[8px] text-slate-500 font-mono uppercase mb-0.5">
+                        Business Base Location
+                      </label>
+
+                      <select
+                        value={regDetail}
+                        onChange={(e) => setRegDetail(e.target.value)}
+                        className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-white focus:outline-none"
+                      >
+                        <option value="Subang Jaya">Subang Jaya</option>
+                        <option value="Shah Alam">Shah Alam</option>
+                        <option value="Petaling Jaya">Petaling Jaya</option>
+                        <option value="Kajang">Kajang</option>
+                        <option value="Puchong">Puchong</option>
+                        <option value="Cheras">Cheras</option>
+                        <option value="KLCC">KLCC</option>
+                        <option value="Bangsar">Bangsar</option>
+                      </select>
+                    </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
                         <label className="block text-[8px] text-slate-500 font-mono uppercase mb-0.5">HHO Machine Model</label>
@@ -944,13 +1271,19 @@ export default function App() {
 
               <div className="h-px bg-slate-800 my-2"></div>
 
-              <button
-                onClick={() => setActiveTab('audit_logs')}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg transition ${activeTab === 'audit_logs' ? 'bg-purple-950/40 text-purple-400 border border-purple-800' : 'text-slate-400 hover:text-white hover:bg-slate-900'}`}
-              >
-                <FileText className="h-4 w-4" />
-                <span>Enterprise Audit Logs</span>
-              </button>
+                {currentRole === 'admin' && (
+                  <button
+                    onClick={() => setActiveTab('audit_logs')}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg transition ${
+                      activeTab === 'audit_logs'
+                        ? 'bg-purple-950/40 text-purple-400 border border-purple-800'
+                        : 'text-slate-400 hover:text-white hover:bg-slate-900'
+                    }`}
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>Enterprise Audit Logs</span>
+                  </button>
+                )}
             </nav>
           </div>
 
@@ -958,10 +1291,10 @@ export default function App() {
           <div className="bg-gradient-to-b from-slate-950 to-slate-900 rounded-xl p-4 border border-purple-950/30 text-[11px] text-slate-400 space-y-2">
             <h4 className="font-semibold text-slate-200 flex items-center gap-1.5 text-xs text-purple-400">
               <Info className="h-3.5 w-3.5" />
-              UTP TEB3323 Spec Guide
+              Why Choose Our Marketplace
             </h4>
             <p className="leading-relaxed">
-              This system implements the exact specifications of <strong>Group 1 Mobile Vehicle Detailing & Carbon Cleaning Marketplace Report.docx</strong>, including localized dispatch thresholds, dynamic RON95 emission offsets, and regional split pricing algorithms.
+              Connect with trusted mobile detailing and carbon cleaning specialists across the Klang Valley. <strong>Our platform provides convenient doorstep vehicle care, transparent pricing, secure bookings, and certified service providers to ensure a professional customer experience every time.</strong>
             </p>
           </div>
         </aside>
@@ -983,7 +1316,7 @@ export default function App() {
                     <div className="bg-slate-950 border border-purple-950/40 p-4 rounded-xl flex items-center justify-between shadow-lg">
                       <div>
                         <span className="block text-[10px] text-slate-400 tracking-wider font-mono">TOTAL ACTIVE BOOKINGS</span>
-                        <span className="text-2xl font-bold text-white">{bookings.length}</span>
+                        <span className="text-2xl font-bold text-white">{userBookings.length}</span>
                       </div>
                       <div className="p-2.5 rounded-lg bg-purple-950 text-purple-400">
                         <Calendar className="h-5 w-5" />
@@ -1018,7 +1351,7 @@ export default function App() {
                       Live Service Execution Monitor
                     </h3>
 
-                    {bookings.filter(b => b.status !== 'Completed').length === 0 ? (
+                    {userBookings.filter(b => b.status !== 'Completed').length === 0 ? (
                       <div className="text-center py-8 text-slate-500">
                         <p className="text-xs">No active mobile service sessions. Dispatch a certified team now.</p>
                         <button
@@ -1030,7 +1363,7 @@ export default function App() {
                       </div>
                     ) : (
                       <div className="space-y-4">
-                        {bookings.filter(b => b.status !== 'Completed').map(booking => (
+                        {userBookings.filter( b => b.status !== 'Completed').map(booking => (
                           <div key={booking.id} className="bg-slate-900 rounded-lg p-4 border border-purple-950/30 relative overflow-hidden">
                             <div className="absolute top-0 left-0 bottom-0 bg-purple-500/5 transition-all" style={{ width: `${booking.progressPercent}%` }}></div>
 
@@ -1085,7 +1418,8 @@ export default function App() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {vehicles.map(car => (
+                      {userVehicles.map(car => (
+
                         <div key={car.id} className="bg-slate-900 p-4 rounded-lg border border-purple-950/20 flex flex-col justify-between hover:border-purple-500/40 transition">
                           <div className="flex justify-between items-start">
                             <div>
@@ -1136,12 +1470,43 @@ export default function App() {
                           <label className="block text-[10px] text-slate-400 font-mono uppercase mb-1">Set Your Coordinates (Zip/Location)</label>
                           <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded px-2">
                             <MapPin className="h-4 w-4 text-purple-400 shrink-0" />
-                            <input
-                              type="text"
+                            <select
                               value={customerAddress}
                               onChange={(e) => setCustomerAddress(e.target.value)}
-                              className="bg-transparent text-xs text-white py-1.5 focus:outline-none w-full"
-                            />
+                              className="bg-slate-900 text-white border-none text-xs py-1.5 focus:outline-none w-full"
+                            >
+                              <option value="Subang Jaya" className="bg-slate-900 text-white">
+                                Subang Jaya
+                              </option>
+
+                              <option value="Shah Alam" className="bg-slate-900 text-white">
+                                Shah Alam
+                              </option>
+
+                              <option value="Petaling Jaya" className="bg-slate-900 text-white">
+                                Petaling Jaya
+                              </option>
+
+                              <option value="Kajang" className="bg-slate-900 text-white">
+                                Kajang
+                              </option>
+
+                              <option value="Puchong" className="bg-slate-900 text-white">
+                                Puchong
+                              </option>
+
+                              <option value="Cheras" className="bg-slate-900 text-white">
+                                Cheras
+                              </option>
+
+                              <option value="KLCC" className="bg-slate-900 text-white">
+                                KLCC
+                              </option>
+
+                              <option value="Bangsar" className="bg-slate-900 text-white">
+                                Bangsar
+                              </option>
+                            </select>
                           </div>
                         </div>
 
@@ -1181,43 +1546,21 @@ export default function App() {
                           <div>
                             <h3 className="text-xs font-bold text-white tracking-wider uppercase mb-1 flex items-center gap-1.5">
                               <Map className="h-4 w-4 text-purple-400" />
-                              Simulated Dispatch Radar (25km coverage)
+                              Google Maps Service Coverage
                             </h3>
                             <p className="text-[10px] text-slate-400">Dynamic tracking checks proximity metrics to guarantee safety and low transport fees.</p>
                           </div>
 
-                          <div className="my-4 aspect-[4/3] bg-slate-900 rounded-lg relative overflow-hidden border border-slate-800">
-                            {/* Visual Grid Lines */}
-                            <div className="absolute inset-0 grid grid-cols-10 grid-rows-10 opacity-5">
-                              {Array.from({ length: 10 }).map((_, i) => (
-                                <div key={i} className="border-t border-l border-slate-300 w-full h-full"></div>
-                              ))}
-                            </div>
-
-                            {/* Customer Center Pin */}
-                            <div className="absolute h-6 w-6 rounded-full bg-purple-500/20 border border-purple-500 flex items-center justify-center animate-pulse" style={{ left: `${customerCoords.x}%`, top: `${customerCoords.y}%`, transform: 'translate(-50%, -50%)' }}>
-                              <User className="h-3.5 w-3.5 text-purple-400" />
-                            </div>
-
-                            {/* Provider Pins */}
-                            {filteredProviders.map(prov => {
-                              const dist = calculateDistance(prov.coords);
-                              return (
-                                <button
-                                  key={prov.id}
-                                  onClick={() => setSelectedProvider(prov)}
-                                  className="absolute group flex flex-col items-center"
-                                  style={{ left: `${prov.coords.x}%`, top: `${prov.coords.y}%`, transform: 'translate(-50%, -50%)' }}
-                                >
-                                  <div className={`h-5 w-5 rounded-full flex items-center justify-center border text-[9px] font-bold ${selectedProvider?.id === prov.id ? 'bg-purple-500 border-purple-300 text-white shadow-lg' : 'bg-slate-950 border-slate-600 text-slate-400 hover:border-purple-400'}`}>
-                                    P
-                                  </div>
-                                  <span className="absolute top-6 bg-slate-950 text-[9px] px-1.5 py-0.5 rounded border border-slate-800 whitespace-nowrap opacity-60 group-hover:opacity-100 transition-opacity">
-                                    {prov.name.split(' ')[0]} ({dist}km)
-                                  </span>
-                                </button>
-                              );
-                            })}
+                          <div className="my-4 aspect-[4/3] rounded-lg overflow-hidden border border-slate-800">
+                            <iframe
+                              title="UTP Location Map"
+                              src={`https://www.google.com/maps?q=${encodeURIComponent(customerAddress)}&output=embed`}
+                              width="100%"
+                              height="100%"
+                              style={{ border: 0 }}
+                              loading="lazy"
+                              allowFullScreen
+                            />
                           </div>
 
                           <div className="text-[11px] text-slate-500 flex items-center justify-between font-mono bg-slate-900/60 p-2 rounded">
@@ -1235,7 +1578,10 @@ export default function App() {
                             </div>
                           ) : (
                             filteredProviders.map(prov => {
-                              const distance = calculateDistance(prov.coords);
+                              const distance =
+                              calculateDistance(
+                                prov.baseLocation
+                              );
                               return (
                                 <div
                                   key={prov.id}
@@ -1306,7 +1652,7 @@ export default function App() {
                             Step 1: Select Active Registered Asset
                           </h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {vehicles.map(car => (
+                            {userVehicles.map(car => (
                               <div
                                 key={car.id}
                                 onClick={() => setSelectedVehicleId(car.id)}
@@ -1417,7 +1763,17 @@ export default function App() {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-slate-400">Distance:</span>
-                            <span className="text-slate-200 font-mono font-bold">{calculateDistance(selectedProvider.coords)} KM</span>
+                            <span className="text-slate-200 font-mono font-bold">{calculateDistance(selectedProvider.baseLocation)} KM</span>
+                          </div>
+                                                    <div className="flex justify-between">
+                            <span className="text-slate-400">
+                              Travel Fee:
+                            </span>
+
+                            <span className="text-orange-400 font-bold font-mono">
+                              RM {calculateTravelFee(selectedProvider?.baseLocation)}
+
+                            </span>
                           </div>
 
                           <div className="border-t border-slate-800 pt-3">
@@ -1433,7 +1789,13 @@ export default function App() {
                           <div className="border-t border-slate-800 pt-3 flex justify-between items-baseline text-white">
                             <span className="font-bold">Estimated Total:</span>
                             <span className="text-lg font-mono font-black text-purple-400">
-                              RM {calculateDynamicPrice(selectedProvider, selectedServices, selectedVehicleId)}
+                              RM {
+                                calculateDynamicPrice(
+                                  selectedProvider,
+                                  selectedServices,
+                                  selectedVehicleId
+                                ) + calculateTravelFee(selectedProvider?.baseLocation)
+                              }
                             </span>
                           </div>
                         </div>
@@ -1481,7 +1843,13 @@ export default function App() {
                         <div className="flex justify-between items-center text-white border-t border-slate-800 pt-2 mt-2 font-bold">
                           <span>Total Escrow Amount:</span>
                           <span className="text-base text-purple-400 font-mono">
-                            RM {calculateDynamicPrice(selectedProvider, selectedServices, selectedVehicleId)}
+                            RM {
+                              calculateDynamicPrice(
+                                selectedProvider,
+                                selectedServices,
+                                selectedVehicleId
+                              ) + calculateTravelFee(selectedProvider?.baseLocation)
+                            }
                           </span>
                         </div>
                       </div>
@@ -1642,7 +2010,7 @@ export default function App() {
 
                   {/* Registered Assets Table list */}
                   <div className="bg-slate-950 rounded-xl border border-purple-950/30 p-5 shadow-lg">
-                    <h3 className="text-sm font-bold text-white tracking-wider uppercase mb-4">Current Configured Assets ({vehicles.length})</h3>
+                    <h3 className="text-sm font-bold text-white tracking-wider uppercase mb-4">Current Configured Assets ({userVehicles.length})</h3>
                     <div className="overflow-x-auto">
                       <table className="w-full text-xs text-left text-slate-300">
                         <thead className="text-[10px] bg-slate-900 text-slate-500 uppercase font-mono border-b border-purple-950/20">
@@ -1655,7 +2023,7 @@ export default function App() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800">
-                          {vehicles.map(car => (
+                          {userVehicles.map(car => (
                             <tr key={car.id} className="hover:bg-slate-900/40">
                               <td className="px-4 py-3 font-semibold text-white">{car.make} {car.model} ({car.year})</td>
                               <td className="px-4 py-3 font-mono">{car.plate}</td>
@@ -1856,7 +2224,7 @@ export default function App() {
                     </h3>
 
                     <div className="space-y-4">
-                      {bookings.filter(b => b.status !== 'Completed').map(booking => (
+                      {bookings.filter(b =>b.providerId === currentUser?.providerId && b.status !== 'Completed').map(booking => (
                         <div key={booking.id} className="bg-slate-900 rounded-lg p-5 border border-purple-950/20">
                           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-3 mb-4">
                             <div>
@@ -2081,10 +2449,10 @@ export default function App() {
               {/* TAB: COMMISSION SPLIT LEDGER */}
               {activeTab === 'commission_split' && (
                 <div className="bg-slate-950 rounded-xl border border-purple-950/30 p-5 space-y-4 shadow-lg">
-                  <h3 className="text-sm font-bold text-white tracking-wider uppercase">Projected Annual Platform Profitability (UTP Model Parameters)</h3>
+                  <h3 className="text-sm font-bold text-white tracking-wider uppercase">Projected Annual Platform Profitability</h3>
                   <div className="bg-slate-900 p-4 rounded-xl border border-purple-950/10 space-y-3 text-xs leading-relaxed">
                     <p>
-                      Using the baseline parameters provided in <strong>Section 8.4</strong> of <strong>Group 1 Mobile Vehicle Detailing & Carbon Cleaning Marketplace Report.docx</strong>:
+                       <strong></strong><strong></strong>:
                     </p>
                     <ul className="list-disc pl-5 space-y-1.5 text-slate-300">
                       <li>Active Mobile Service Providers: <strong>50 providers</strong></li>
