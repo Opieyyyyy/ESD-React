@@ -530,29 +530,29 @@ const calculateTravelFee = () => {
             <div className="bg-gradient-to-tr from-purple-950/20 via-slate-900 to-indigo-950/20 border border-purple-900/30 p-6 rounded-2xl space-y-4">
               <div className="flex items-center gap-2">
                 <Shield className="h-6 w-6 text-purple-400" />
-                <span className="font-mono text-xs text-purple-300 font-semibold uppercase tracking-widest">UTP Authentication Authority</span>
+                <span className="font-mono text-xs text-purple-300 font-semibold uppercase tracking-widest">MOBILE VEHICLE DETAILING MARKETPLACE</span>
               </div>
               <h2 className="text-2xl font-black text-white tracking-tight leading-snug">
-                Unified Role-Based Access Control Interface
+                Professional Mobile Detailing & Carbon Cleaning Services
               </h2>
               <p className="text-xs text-slate-400 leading-relaxed">
-                This secure gateway manages permission sets matching the strict guidelines of <strong className="text-purple-300">"Group 1 Mobile Vehicle Detailing & Carbon Cleaning Marketplace Report.docx"</strong>. Log in with secure parameters to instantly unlock customized dashboard reporting, dispatch radars, data persistence nodes, and commission ledger flows.
+                Book trusted mobile vehicle detailing and hydrogen carbon cleaning services directly to your home, office, or preferred location. <strong className="text-purple-300">"Our marketplace connects customers with certified automotive care specialists across the Klang Valley, providing convenient scheduling, transparent pricing, and professional on-site vehicle maintenance."</strong>
               </p>
 
               <div className="h-px bg-slate-800"></div>
 
               <div className="grid grid-cols-3 gap-2 pt-2 text-center text-[10px] font-mono">
                 <div className="p-2 bg-slate-950/80 rounded border border-purple-950/40">
-                  <span className="block text-purple-400 font-bold">100% RBAC</span>
-                  <span className="text-slate-500">Fully Compliant</span>
+                  <span className="block text-purple-400 font-bold">100+ Bookings</span>
+                  <span className="text-slate-500">Completed Monthly</span>
                 </div>
                 <div className="p-2 bg-slate-950/80 rounded border border-purple-950/40">
-                  <span className="block text-purple-400 font-bold">UTP AUDIT</span>
-                  <span className="text-slate-500">Immutable Logs</span>
+                  <span className="block text-purple-400 font-bold">CERTIFIED TECHNICIANS</span>
+                  <span className="text-slate-500">VERIFIED PROFESSIONALS</span>
                 </div>
                 <div className="p-2 bg-slate-950/80 rounded border border-purple-950/40">
-                  <span className="block text-purple-400 font-bold">STRIPE ESCROW</span>
-                  <span className="text-slate-500">Verified System</span>
+                  <span className="block text-purple-400 font-bold">DOOR SERVICE</span>
+                  <span className="text-slate-500">CONVENIENT SCHEDULING</span>
                 </div>
               </div>
             </div>
@@ -995,10 +995,10 @@ const calculateTravelFee = () => {
           <div className="bg-gradient-to-b from-slate-950 to-slate-900 rounded-xl p-4 border border-purple-950/30 text-[11px] text-slate-400 space-y-2">
             <h4 className="font-semibold text-slate-200 flex items-center gap-1.5 text-xs text-purple-400">
               <Info className="h-3.5 w-3.5" />
-              UTP TEB3323 Spec Guide
+              Why Choose Our Marketplace
             </h4>
             <p className="leading-relaxed">
-              This system implements the exact specifications of <strong>Group 1 Mobile Vehicle Detailing & Carbon Cleaning Marketplace Report.docx</strong>, including localized dispatch thresholds, dynamic RON95 emission offsets, and regional split pricing algorithms.
+              Connect with trusted mobile detailing and carbon cleaning specialists across the Klang Valley. <strong>Our platform provides convenient doorstep vehicle care, transparent pricing, secure bookings, and certified service providers to ensure a professional customer experience every time.</strong>
             </p>
           </div>
         </aside>
