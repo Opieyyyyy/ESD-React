@@ -178,8 +178,26 @@ export default function App() {
 
   const [currentRole, setCurrentRole] = useState('customer'); // customer | provider | admin
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [vehicles, setVehicles] = useState(INITIAL_VEHICLES);
-  const [providers, setProviders] = useState(INITIAL_PROVIDERS);
+  const [vehicles, setVehicles] = useState(() => {
+
+    const savedVehicles =
+      localStorage.getItem("vehicles");
+
+    return savedVehicles
+      ? JSON.parse(savedVehicles)
+      : INITIAL_VEHICLES;
+
+  });
+  const [providers, setProviders] = useState(() => {
+
+    const savedProviders =
+      localStorage.getItem("providers");
+
+    return savedProviders
+      ? JSON.parse(savedProviders)
+      : INITIAL_PROVIDERS;
+
+  });
 
   const [selectedVehicleId, setSelectedVehicleId] = useState(INITIAL_VEHICLES[0].id);
   const [searchQuery, setSearchQuery] = useState('');
@@ -193,7 +211,15 @@ export default function App() {
   const [customerAddress, setCustomerAddress] = useState('Subang Jaya');
   const [customerCoords, setCustomerCoords] = useState({ x: 50, y: 50 });
 
-  const [bookings, setBookings] = useState([
+  const [bookings, setBookings] = useState(() => {
+
+    const savedBookings =
+      localStorage.getItem("bookings");
+
+    return savedBookings
+      ? JSON.parse(savedBookings)
+      : [
+
     {
       id: "B-88301",
       customerEmail: "harith@utp.edu.my",
@@ -230,7 +256,8 @@ export default function App() {
       reviewRating: 5,
       reviewText: "Exceptional engine sound recovery after carbon cleaning! Fuel consumption has improved immediately."
     }
-  ]);
+  ]});
+
 
   const [auditLogs, setAuditLogs] = useState([
     { id: "L-001", timestamp: "2026-07-20T00:05:12Z", category: "SECURITY", user: "system_daemon", event: "Token Session validation completed for student credentials (22005760 / 22005830)", status: "SUCCESS" },
@@ -292,6 +319,28 @@ export default function App() {
 
   }, [accounts]);
 
+  useEffect(() => {
+    localStorage.setItem(
+      "vehicles",
+      JSON.stringify(vehicles)
+    );
+  }, [vehicles]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "providers",
+      JSON.stringify(providers)
+    );
+  }, [providers]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "bookings",
+      JSON.stringify(bookings)
+    );
+  }, [bookings]);
+
+  
   const addAuditLog = (category, user, event, status = "SUCCESS") => {
     const newLog = {
       id: `L-${Math.floor(1000 + Math.random() * 9000)}`,
