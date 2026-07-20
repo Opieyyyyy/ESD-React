@@ -110,8 +110,17 @@ const INITIAL_VEHICLES = [
 ];
 
 export default function App() {
-  const [accounts, setAccounts] = useState(DEFAULT_ACCOUNTS);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [accounts, setAccounts] = useState(() => {
+
+    const savedAccounts =
+      localStorage.getItem("accounts");
+
+    return savedAccounts
+      ? JSON.parse(savedAccounts)
+      : DEFAULT_ACCOUNTS;
+
+  });
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authScreen, setAuthScreen] = useState('login'); // login | register
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -224,6 +233,15 @@ export default function App() {
     }
 
   }, []);
+
+  useEffect(() => {
+
+    localStorage.setItem(
+      "accounts",
+      JSON.stringify(accounts)
+    );
+
+  }, [accounts]);
 
   const addAuditLog = (category, user, event, status = "SUCCESS") => {
     const newLog = {
