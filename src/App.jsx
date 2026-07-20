@@ -47,7 +47,7 @@ const INITIAL_PROVIDERS = [
     owner: "Zulhelmi Bin Mansor",
     rating: 4.9,
     reviewsCount: 142,
-    baseLocation: "Subang Jaya, Selangor",
+    baseLocation: "Subang Jaya",
     coords: { x: 45, y: 55 },
     coverageRadius: 25, // km
     services: ['carbon_cleaning', 'polishing', 'ceramic_coating', 'interior_wash'],
@@ -62,7 +62,7 @@ const INITIAL_PROVIDERS = [
     owner: "Ahmad Farhan",
     rating: 4.7,
     reviewsCount: 89,
-    baseLocation: "Shah Alam, Selangor",
+    baseLocation: "Shah Alam",
     coords: { x: 30, y: 45 },
     coverageRadius: 20,
     services: ['carbon_cleaning', 'interior_wash', 'polishing'],
@@ -77,7 +77,7 @@ const INITIAL_PROVIDERS = [
     owner: "Kavinesh Raj",
     rating: 4.95,
     reviewsCount: 210,
-    baseLocation: "Petaling Jaya, KL",
+    baseLocation: "Petaling Jaya",
     coords: { x: 60, y: 50 },
     coverageRadius: 30,
     services: ['polishing', 'ceramic_coating', 'interior_wash'],
@@ -92,7 +92,7 @@ const INITIAL_PROVIDERS = [
     owner: "Muhammad Idris",
     rating: 4.6,
     reviewsCount: 64,
-    baseLocation: "Kajang, Selangor",
+    baseLocation: "Kajang",
     coords: { x: 75, y: 75 },
     coverageRadius: 15,
     services: ['carbon_cleaning', 'interior_wash'],
@@ -445,11 +445,62 @@ const handleLogout = () => {
     return runningTotal;
   };
 
-  const calculateDistance = (pCoords) => {
-    const dx = customerCoords.x - pCoords.x;
-    const dy = customerCoords.y - pCoords.y;
-    const distanceKm = Math.sqrt(dx * dx + dy * dy).toFixed(1);
-    return parseFloat(distanceKm);
+  const locationDistances = {
+  "Subang Jaya": {
+    "Subang Jaya": 0,
+    "Shah Alam": 8,
+    "Petaling Jaya": 10,
+    "Kajang": 30,
+    "Puchong": 15,
+    "Cheras": 25,
+    "KLCC": 20,
+    "Bangsar": 18
+  },
+
+  "Shah Alam": {
+    "Subang Jaya": 8,
+    "Shah Alam": 0,
+    "Petaling Jaya": 12,
+    "Kajang": 35,
+    "Puchong": 15,
+    "Cheras": 30,
+    "KLCC": 25,
+    "Bangsar": 20
+  },
+
+  "Petaling Jaya": {
+    "Subang Jaya": 10,
+    "Shah Alam": 12,
+    "Petaling Jaya": 0,
+    "Kajang": 28,
+    "Puchong": 15,
+    "Cheras": 18,
+    "KLCC": 12,
+    "Bangsar": 8
+  },
+
+  "Kajang": {
+    "Subang Jaya": 30,
+    "Shah Alam": 35,
+    "Petaling Jaya": 28,
+    "Kajang": 0,
+    "Puchong": 20,
+    "Cheras": 15,
+    "KLCC": 25,
+    "Bangsar": 22
+  }
+};
+
+  const calculateDistance = (providerLocation) => {
+
+    return (
+      locationDistances[
+        providerLocation
+      ]?.[
+        customerAddress
+      ] || 20
+    );
+
   };
 
 const calculateTravelFee = (providerLocation) => {
@@ -475,7 +526,10 @@ const calculateTravelFee = (providerLocation) => {
 
   const filteredProviders = useMemo(() => {
     return providers.filter(provider => {
-      const distance = calculateDistance(provider.coords);
+      const distance =
+      calculateDistance(
+        provider.baseLocation
+      );
       const matchesRadius = distance <= provider.coverageRadius;
       const matchesSearch = provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         provider.baseLocation.toLowerCase().includes(searchQuery.toLowerCase());
@@ -493,6 +547,9 @@ const calculateTravelFee = (providerLocation) => {
       selectedServices,
       selectedVehicleId
     ) +
+    calculateTravelFee(
+      selectedProvider?.baseLocation
+    );
     calculateTravelFee();
 
     const newBooking = {
@@ -1359,7 +1416,10 @@ const calculateTravelFee = (providerLocation) => {
                             </div>
                           ) : (
                             filteredProviders.map(prov => {
-                              const distance = calculateDistance(prov.coords);
+                              const distance =
+                              calculateDistance(
+                                prov.baseLocation
+                              );
                               return (
                                 <div
                                   key={prov.id}
@@ -1541,7 +1601,7 @@ const calculateTravelFee = (providerLocation) => {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-slate-400">Distance:</span>
-                            <span className="text-slate-200 font-mono font-bold">{calculateDistance(selectedProvider.coords)} KM</span>
+                            <span className="text-slate-200 font-mono font-bold">{calculateDistance(selectedProvider.baseLocation)} KM</span>
                           </div>
                                                     <div className="flex justify-between">
                             <span className="text-slate-400">
