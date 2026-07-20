@@ -105,9 +105,38 @@ const INITIAL_PROVIDERS = [
 ];
 
 const INITIAL_VEHICLES = [
-  { id: 'v1', make: "Proton", model: "Saga", year: "2021", plate: "VEE 2011", category: "Sedan", engineSize: "1.3L" },
-  { id: 'v2', make: "Perodua", model: "Ativa", year: "2023", plate: "WQA 8821", category: "SUV", engineSize: "1.0L Turbo" },
-  { id: 'v3', make: "Honda", model: "Civic FE", year: "2022", plate: "ALL 993", category: "Sedan", engineSize: "1.5L Turbo" },
+  {
+    id: 'v1',
+    ownerEmail: "harith@utp.edu.my",
+    make: "Proton",
+    model: "Saga",
+    year: "2021",
+    plate: "VEE 2011",
+    category: "Sedan",
+    engineSize: "1.3L"
+  },
+
+  {
+    id: 'v2',
+    ownerEmail: "harith@utp.edu.my",
+    make: "Perodua",
+    model: "Ativa",
+    year: "2023",
+    plate: "WQA 8821",
+    category: "SUV",
+    engineSize: "1.0L Turbo"
+  },
+
+  {
+    id: 'v3',
+    ownerEmail: "harith@utp.edu.my",
+    make: "Honda",
+    model: "Civic FE",
+    year: "2022",
+    plate: "ALL 993",
+    category: "Sedan",
+    engineSize: "1.5L Turbo"
+  }
 ];
 
 export default function App() {
@@ -217,6 +246,13 @@ export default function App() {
 
   const [annualKm, setAnnualKm] = useState(18000);
   const [averageFuelEfficiency, setAverageFuelEfficiency] = useState(8.5);
+  const userVehicles = useMemo(() => {
+
+    return vehicles.filter(
+      v => v.ownerEmail === currentUser?.email
+    );
+
+  }, [vehicles, currentUser]);
   useEffect(() => {
 
     const savedUser =
@@ -324,14 +360,15 @@ export default function App() {
     if (regRole === 'customer') {
       const initialCarId = `v${vehicles.length + 1}`;
       const newCar = {
-        id: initialCarId,
-        make: regVehicleMake,
-        model: regVehicleModel,
-        year: "2024",
-        plate: regPlate || `UTP ${Math.floor(1000 + Math.random() * 9000)}`,
-        category: regVehicleCategory,
-        engineSize: regEngineSize
-      };
+      id: `v${vehicles.length + 1}`,
+      ownerEmail: currentUser?.email,
+      make: newVehicleMake,
+      model: newVehicleModel,
+      year: newVehicleYear || '2026',
+      plate: newVehiclePlate,
+      category: newVehicleCategory,
+      engineSize: newVehicleEngine
+    };
       setVehicles(prev => [...prev, newCar]);
       setSelectedVehicleId(initialCarId);
     } else if (regRole === 'provider') {
@@ -631,6 +668,7 @@ const calculateTravelFee = (providerLocation) => {
     if (!newVehicleMake || !newVehicleModel || !newVehiclePlate) return;
     const newCar = {
       id: `v${vehicles.length + 1}`,
+      ownerEmail: currentUser?.email,
       make: newVehicleMake,
       model: newVehicleModel,
       year: newVehicleYear || '2026',
@@ -1308,7 +1346,8 @@ const calculateTravelFee = (providerLocation) => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {vehicles.map(car => (
+                      {userVehicles.map(car => (
+
                         <div key={car.id} className="bg-slate-900 p-4 rounded-lg border border-purple-950/20 flex flex-col justify-between hover:border-purple-500/40 transition">
                           <div className="flex justify-between items-start">
                             <div>
@@ -1541,7 +1580,7 @@ const calculateTravelFee = (providerLocation) => {
                             Step 1: Select Active Registered Asset
                           </h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {vehicles.map(car => (
+                            {userVehicles.map(car => (
                               <div
                                 key={car.id}
                                 onClick={() => setSelectedVehicleId(car.id)}
@@ -1899,7 +1938,7 @@ const calculateTravelFee = (providerLocation) => {
 
                   {/* Registered Assets Table list */}
                   <div className="bg-slate-950 rounded-xl border border-purple-950/30 p-5 shadow-lg">
-                    <h3 className="text-sm font-bold text-white tracking-wider uppercase mb-4">Current Configured Assets ({vehicles.length})</h3>
+                    <h3 className="text-sm font-bold text-white tracking-wider uppercase mb-4">Current Configured Assets ({userVehicles.length})</h3>
                     <div className="overflow-x-auto">
                       <table className="w-full text-xs text-left text-slate-300">
                         <thead className="text-[10px] bg-slate-900 text-slate-500 uppercase font-mono border-b border-purple-950/20">
@@ -1912,7 +1951,7 @@ const calculateTravelFee = (providerLocation) => {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800">
-                          {vehicles.map(car => (
+                          {userVehicles.map(car => (
                             <tr key={car.id} className="hover:bg-slate-900/40">
                               <td className="px-4 py-3 font-semibold text-white">{car.make} {car.model} ({car.year})</td>
                               <td className="px-4 py-3 font-mono">{car.plate}</td>
