@@ -446,7 +446,41 @@ const handleLogout = () => {
   };
 
   const locationDistances = {
-      "Kajang": {
+
+    "Subang Jaya": {
+      "Subang Jaya": 0,
+      "Shah Alam": 8,
+      "Petaling Jaya": 10,
+      "Kajang": 30,
+      "Puchong": 15,
+      "Cheras": 25,
+      "KLCC": 20,
+      "Bangsar": 18
+    },
+
+    "Shah Alam": {
+      "Subang Jaya": 8,
+      "Shah Alam": 0,
+      "Petaling Jaya": 12,
+      "Kajang": 35,
+      "Puchong": 15,
+      "Cheras": 30,
+      "KLCC": 25,
+      "Bangsar": 20
+    },
+
+    "Petaling Jaya": {
+      "Subang Jaya": 10,
+      "Shah Alam": 12,
+      "Petaling Jaya": 0,
+      "Kajang": 28,
+      "Puchong": 15,
+      "Cheras": 18,
+      "KLCC": 12,
+      "Bangsar": 8
+    },
+
+    "Kajang": {
       "Subang Jaya": 30,
       "Shah Alam": 35,
       "Petaling Jaya": 28,
@@ -500,6 +534,7 @@ const handleLogout = () => {
       "KLCC": 5,
       "Bangsar": 0
     }
+
   };
 
   const calculateDistance = (providerLocation) => {
