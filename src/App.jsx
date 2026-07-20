@@ -235,7 +235,7 @@ export default function App() {
       setAuthSuccess(`Welcome back, ${account.name}! Authenticating session...`);
       addAuditLog("SECURITY", account.email, `User successfully authenticated as [${account.role.toUpperCase()}] role using credentials`, "SUCCESS");
     } else {
-      setAuthError('Invalid credentials. Please select a quick-demo credential below for easy grading.');
+      setAuthError('Invalid credentials. Please enter correct email and password.');
       addAuditLog("SECURITY", loginEmail || "anonymous", `Failed login attempt. Credential mismatch against system directory`, "FAILED");
     }
   };
@@ -981,13 +981,19 @@ const calculateTravelFee = () => {
 
               <div className="h-px bg-slate-800 my-2"></div>
 
-              <button
-                onClick={() => setActiveTab('audit_logs')}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg transition ${activeTab === 'audit_logs' ? 'bg-purple-950/40 text-purple-400 border border-purple-800' : 'text-slate-400 hover:text-white hover:bg-slate-900'}`}
-              >
-                <FileText className="h-4 w-4" />
-                <span>Enterprise Audit Logs</span>
-              </button>
+                {currentRole === 'admin' && (
+                  <button
+                    onClick={() => setActiveTab('audit_logs')}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg transition ${
+                      activeTab === 'audit_logs'
+                        ? 'bg-purple-950/40 text-purple-400 border border-purple-800'
+                        : 'text-slate-400 hover:text-white hover:bg-slate-900'
+                    }`}
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>Enterprise Audit Logs</span>
+                  </button>
+                )}
             </nav>
           </div>
 
@@ -2148,10 +2154,10 @@ const calculateTravelFee = () => {
               {/* TAB: COMMISSION SPLIT LEDGER */}
               {activeTab === 'commission_split' && (
                 <div className="bg-slate-950 rounded-xl border border-purple-950/30 p-5 space-y-4 shadow-lg">
-                  <h3 className="text-sm font-bold text-white tracking-wider uppercase">Projected Annual Platform Profitability (UTP Model Parameters)</h3>
+                  <h3 className="text-sm font-bold text-white tracking-wider uppercase">Projected Annual Platform Profitability</h3>
                   <div className="bg-slate-900 p-4 rounded-xl border border-purple-950/10 space-y-3 text-xs leading-relaxed">
                     <p>
-                      Using the baseline parameters provided in <strong>Section 8.4</strong> of <strong>Group 1 Mobile Vehicle Detailing & Carbon Cleaning Marketplace Report.docx</strong>:
+                       <strong></strong><strong></strong>:
                     </p>
                     <ul className="list-disc pl-5 space-y-1.5 text-slate-300">
                       <li>Active Mobile Service Providers: <strong>50 providers</strong></li>
